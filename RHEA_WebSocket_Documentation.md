@@ -4,6 +4,8 @@
 
 RHEA - это система управления кофеваркой с графическим интерфейсом, предназначенная для международного использования. Система использует WebSocket-соединение для обмена данными между веб-интерфейсом и серверной частью (GPU/SMU).
 
+Система поддерживает до 48 выборов (RHEA_NUM_MAX_SELECTIONS=48), каждый из которых может иметь различные параметры: доступность, цену, поддержку свежего молока и т.д.
+
 ## Подключение к WebSocket
 
 ### Параметры подключения
@@ -11,9 +13,16 @@ RHEA - это система управления кофеваркой с гра
 - **Протокол**: `binary`
 - **Тип соединения**: WebSocket с бинарными данными
 
-## Процесс идентификации
+## Процесс Hand Shake (установление соединения)
 
-### 1. Запрос ID-кода при подключении
+### 1. Установка соединения
+При подключении к WebSocket-серверу на порту 2280 происходит следующая последовательность:
+
+1. Клиент устанавливает соединение с сервером
+2. Сервер может сразу отправить события (например, статус CPU) без предварительного запроса
+3. Клиент отправляет запрос на получение ID-кода для идентификации
+
+### 2. Запрос ID-кода при подключении
 После установки соединения клиент отправляет запрос для получения уникального ID-кода:
 
 ```javascript
@@ -26,7 +35,7 @@ buffer[3] = RHEA_CLIENT_INFO__UNUSED3;      // 0x00
 this.sendGPUCommand("I", buffer, 0, 0);
 ```
 
-### 2. Идентификация после получения ID-кода
+### 3. Идентификация после получения ID-кода
 После получения ID-кода клиент идентифицируется в системе:
 
 ```javascript
@@ -41,6 +50,17 @@ buffer[5] = this.idCode_1;
 buffer[6] = this.idCode_2;
 buffer[7] = this.idCode_3;  // LSB ID-кода
 this.sendGPUCommand("W", buffer, 0, 0);
+```
+
+### 4. Запрос начального состояния
+После успешной идентификации клиент запрашивает начальное состояние системы:
+
+```javascript
+// Запросы начального состояния
+this.requestGPUEvent(RHEA_EVENT_SELECTION_AVAILABILITY_UPDATED);
+this.requestGPUEvent(RHEA_EVENT_SELECTION_PRICES_UPDATED);
+this.requestGPUEvent(RHEA_EVENT_CREDIT_UPDATED);
+this.requestGPUEvent(RHEA_EVENT_CPU_STATUS);
 ```
 
 ## Формат команд
@@ -106,6 +126,11 @@ this.sendGPUCommand("W", buffer, 0, 0);
 
 | ID | Константа | Назначение |
 |----|-----------|------------|
+| 70 | RHEA_EVENT_START_SELECTION_FORCE_JUG | Запуск выбора с принудительным использованием кувшина |
+| 72 | RHEA_EVENT_SELECTION_PROGRESS | Прогресс выполнения выбора |
+| 77 | RHEA_EVENT_SET_GUI_URL | Установка URL GUI |
+| 71 | RHEA_EVENT_CPU_ACTIVATE_BUZZER | Активация зуммера CPU |
+| (неизвестен) | RHEA_EVENT_START_SEL_ALREADY_PAID | Запуск выбора с уже оплаченной суммой |
 | 97 | RHEA_EVENT_SELECTION_AVAILABILITY_UPDATED | Обновление доступности выбора |
 | 98 | RHEA_EVENT_SELECTION_PRICES_UPDATED | Обновление цен на выбор |
 | 99 | RHEA_EVENT_CREDIT_UPDATED | Обновление кредита |
@@ -115,13 +140,45 @@ this.sendGPUCommand("W", buffer, 0, 0);
 | 103 | RHEA_EVENT_STOP_SELECTION | Остановка выбора |
 | 104 | RHEA_EVENT_CPU_STATUS | Статус CPU |
 | 105 | RHEA_EVENT_ANSWER_TO_IDCODE_REQUEST | Ответ на запрос ID-кода |
+| 108 | RHEA_EVENT_READ_DATA_AUDIT | Чтение аудита данных |
 | 115 | RHEA_EVENT_SEND_BUTTON | Нажатие кнопки |
 | 116 | RHEA_EVENT_SEND_PARTIAL_DA3 | Частичная отправка DA3 |
-| 108 | RHEA_EVENT_READ_DATA_AUDIT | Чтение аудита данных |
-| 71 | RHEA_EVENT_CPU_ACTIVATE_BUZZER | Активация зуммера CPU |
-| 77 | RHEA_EVENT_SET_GUI_URL | Установка URL GUI |
 
 ## Примеры команд
+
+### Примеры событий, связанных с выбором
+
+#### RHEA_EVENT_SELECTION_PROGRESS (ID: 72)
+Событие отправляется во время выполнения выбора, показывает прогресс:
+
+```javascript
+// Пример обработки события прогресса выбора
+rhea.onEvent_selectionProgress = function(progressPercentage) {
+  console.log("Прогресс выбора: " + progressPercentage + "%");
+};
+```
+
+#### RHEA_EVENT_SELECTION_REQ_STATUS (ID: 101)
+Событие запрашивает статус определенного выбора:
+
+```javascript
+// Запрос статуса конкретного выбора
+var buffer = new Uint8Array(2);
+buffer[0] = RHEA_EVENT_SELECTION_REQ_STATUS;  // 101
+buffer[1] = selectionNumber;  // номер выбора
+this.sendGPUCommand("E", buffer, 0, 0);
+```
+
+#### RHEA_EVENT_START_SELECTION_FORCE_JUG (ID: 70)
+Запуск выбора с принудительным использованием кувшина:
+
+```javascript
+// Запуск выбора с принудительным использованием кувшина
+var buffer = new Uint8Array(2);
+buffer[0] = RHEA_EVENT_START_SELECTION_FORCE_JUG;  // 70
+buffer[1] = selectionNumber;  // номер выбора (1-48)
+this.sendGPUCommand("E", buffer, 0, 0);
+```
 
 ### Пример AJAX-запроса
 ```javascript
@@ -158,6 +215,46 @@ this.sendGPUCommand("E", buffer, 0, 0);
 var buffer = new Uint8Array(2);
 buffer[0] = RHEA_EVENT_START_SELECTION;
 buffer[1] = 5;
+this.sendGPUCommand("E", buffer, 0, 0);
+```
+
+### Примеры команд управления выбором
+
+#### START_SELECTION - Запуск выбора
+```javascript
+// Запуск выбора с номером N
+var buffer = new Uint8Array(2);
+buffer[0] = RHEA_EVENT_START_SELECTION;  // 102
+buffer[1] = N;  // номер выбора (1-48)
+this.sendGPUCommand("E", buffer, 0, 0);
+```
+
+#### START_SELECTION_FORCE_JUG - Запуск выбора с принудительным использованием кувшина
+```javascript
+// Запуск выбора с принудительным использованием кувшина
+var buffer = new Uint8Array(2);
+buffer[0] = RHEA_EVENT_START_SELECTION_FORCE_JUG;  // 70
+buffer[1] = N;  // номер выбора (1-48)
+this.sendGPUCommand("E", buffer, 0, 0);
+```
+
+#### START_SEL_ALREADY_PAID - Запуск выбора с уже оплаченной суммой
+```javascript
+// Запуск выбора с уже оплаченной суммой
+var buffer = new Uint8Array(6);
+buffer[0] = RHEA_EVENT_START_SEL_ALREADY_PAID;  // (неизвестный ID, но используется в системе)
+buffer[1] = N;  // номер выбора (1-48)
+buffer[2] = paymentType;  // тип оплаты
+// байты 3-4: цена в виде 16-битного числа (старший байт, младший байт)
+buffer[5] = forceJUG;  // флаг принудительного использования кувшина (0 или 1)
+this.sendGPUCommand("E", buffer, 0, 0);
+```
+
+#### STOP_SELECTION - Остановка текущего выбора
+```javascript
+// Остановка текущего выбора
+var buffer = new Uint8Array(1);
+buffer[0] = RHEA_EVENT_STOP_SELECTION;  // 103
 this.sendGPUCommand("E", buffer, 0, 0);
 ```
 
@@ -272,6 +369,23 @@ ajax(commandString, plainJSObject)
 ```javascript
 requestGPUEvent(eventTypeID)
 ```
+
+## Система выбора (Selection System)
+
+### Основные параметры выбора
+Каждый из 48 возможных выборов имеет следующие параметры:
+- **selNum**: номер выбора (1-48)
+- **enabled**: статус доступности (0 - недоступен, 1 - доступен)
+- **price**: цена в формате строки (например, "1.50")
+- **withFreshMilk**: поддержка свежего молока (0 - нет, 1 - да)
+
+### Управление выбором
+Система позволяет:
+- Запускать выбор с помощью команд START_SELECTION, START_SELECTION_FORCE_JUG или START_SEL_ALREADY_PAID
+- Останавливать текущий выбор с помощью STOP_SELECTION
+- Отслеживать прогресс выполнения выбора через событие SELECTION_PROGRESS
+- Запрашивать статус конкретного выбора через SELECTION_REQ_STATUS
+- Обновлять доступность и цены выборов через соответствующие события
 
 ## Заключение
 
