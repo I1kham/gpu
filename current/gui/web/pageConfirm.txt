@@ -1,0 +1,1027 @@
+<html>
+<head>
+	<title>GUI</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<link href="styleOptionButtons.css" rel="stylesheet" type="text/css">
+
+
+	<style>
+		.btnStartConfirm {
+			border: 1px solid white;
+			border-radius: 30px;
+			color: white;
+			width: 430px;
+			background-image: none;
+			font-size: 1em;
+		}
+		.btnStartConfirm.disabled {
+			border: 1px solid #838383;
+			color: #838383;
+		}
+		.footer {
+			position: absolute;
+			bottom: 0;
+		}
+
+		.footer .progress-finish{
+			display: inline-block;
+			color: #00dd00;
+			padding-top: 10px;
+		}
+
+		.footer_center {
+			padding-top: 0;
+		}
+
+		.cpu-message {
+			position: absolute; bottom: 15px; left: 0px; width: 100%; text-align: center; display: block; color:#838383;
+		}
+		
+		.cpu-message.booking {
+			font-size: 16px; bottom: 47px;
+		}
+
+		.rheaModal {
+			position: absolute; top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0,0,0,.85); z-index: 10;
+		}
+		.rheaModal .rheaModalContent{
+			margin: 100px;border: 3px solid white;border-radius: 4px;position: absolute;top: 0;bottom: 0;left: 0;right: 0;background-color: #000;
+		}
+		.rheaModal .rheaModalContent .milkBgImage{
+			border: 1px solid white;width: 270px; height: 330px; margin: 30px; background-image: url("img/milk_tank.png");background-size: contain;float: left;
+		}
+
+		.rheaModal .milkTextualContent {
+			margin-top: 30px; float: left; width: 470px; height: 330px; position: relative;
+		}
+
+		.rheaModal .btnAction {
+			display: table; width: 100%; height: 37px; border: 1px solid; border-radius: 25px; color: #838383; font-weight: bold; position: relative; cursor: pointer; margin-top: 25px;
+		}
+
+		.rheaModal .btnAction p {
+			display: table-cell; vertical-align: middle; padding: 0 20px;
+		}
+	</style>
+</head>
+
+<body onLoad="rheaBootstrap()">
+
+<div id="mainWrapper" class="wrapper1024x600">
+	<div class="header">
+		<center><img id="headerImage" src="img/logo_rhea.jpg" style="width: 126px; height: 40px; display: none"></center> 	
+	</div>
+	
+	<div class="pageConfirm">
+		<div class="pageConfirm_center">
+			<div id="divSelectionImage" class="pageConfirm_selectionImage"></div>
+			<div class="pageConfirm_selectionNdName pageConfirm_bigFont" id="divSelectionNdName" style="display:none"></div>
+			<div id="divBtnSelectionInfo" class="pageConfirm_selectionInfo" style="display:none" onclick="gotoSelectionInfo()"><img draggable='false' src="img/info.png"></div>
+			<div class="pageConfirm_selectionBottom pageConfirm_bigFont" id="divPrice"></div>
+		</div>
+		
+		
+		<div class="pageConfirm_right" style="position:relative;">
+			<div id="rightPane_wait" style="display:none; text-align:center; margin-top:160px"><img draggable='false' src="img/animationRound.gif"></div>
+			<div id="rightPane_content">
+				<div id="cupCustomBox" class="pageConfirm_right3box">
+					<div class="pageConfirm_bigFont" style="margin-bottom:10px;" id="divSelectionName"></div>
+					<div id="selDescription"></div>
+				</div>
+				<div class="pageConfirm_bottomBox">
+					<table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%">
+						<tr valign="middle">
+							<td align="middle">
+								<div id="btnStart" class="btnStart pageConfirm_bigFont" onclick="onBtnStartSelection('btnStart')"></div>
+								<div id="lblStartConfirm" style="font-size: 15px;position: absolute;top: -15px;left: 0;right: 0;margin: 0 auto;width: 430px; display: none;"></div>
+								<div id="btnStartConfirm" class="btnStart btnStartConfirm pageConfirm_bigFont disabled" onclick="onBtnStartSelection('btnConfirmBooking')" style="display:none"></div>
+								<div id="btnStartNotAvail" class="btnStartNotAvail" style="display:none"></div>
+								<div id="btnMilkNotAvail" class="btnMilk" style="display:none" onclick="milkPopup_open()">
+									<img draggable="false" src="img/milk_bottle.png">
+									<p id="refillMilkLabel">REFILL MILK</p>
+								</div>
+							</td>
+						</tr>
+					</table>			
+				</div>
+			</div>
+		</div>
+		
+		<div class="clear"></div>
+	</div>
+	
+	
+	<div id="bookingFooter" class="footer" style="display: none;">
+		<div class="footer_left"></div>
+		<div class="footer_center">
+			<div id="beverageBookingLoader" class="booking-container">
+				<div class="progress-bar">
+					<div class="progress-icon" style="background-image:
+						url(img/beverage_booking.png); background-repeat: no-repeat;
+						background-position: center; width: 15px; height: 47px;"></div>
+					<div id="currentDrink" class="progress-title">Current drink</div>
+					<div id="progress-bar-value" class="progress-bar-value">
+						<span id="progress-cursor"></span>
+					</div>
+					<div id="progress-finish" class="progress-finish"></div>
+				</div>
+			</div>
+		</div>
+		<div class="footer_right"></div>
+	</div>
+	
+	<!-- btn jug -->
+	<div id="btnJUG" class="pageConfirm_btnJUG selected" style="display:none; position:absolute; top:443px; left:451px;" onclick="onBtnJUGClicked()"><p id="btnJUG_text"></p></div>
+	
+	<!-- cpu msg -->
+	<div id="divCPUMessage" class="cpu-message"></div>	
+
+	<!-- il btn home lo metto qui in position absolute per dargli una maggiore area di click -->
+	<div id="divBtnHome" class="btnIndietro"><img draggable='false' src="img/btnHome.png"></div>
+	
+	<div id="rheaModal" class="rheaModal" style="display: none">
+		<div id="rheaModalContent" class="rheaModalContent"></div>
+	</div>
+</div> <!-- wrapper1024x600 -->
+
+
+
+<script src="config/lang.js"></script>
+<script src="config/mainMenuIcons.js"></script>
+<script src="config/MMI.js"></script>
+<script src="js/rheaBootstrap.js"></script>
+<script src="js/qrcode/qrcode.min.js"></script>
+<script src="js/popup.js"></script>
+<script type="text/javascript">
+var iconNum = 0;
+var selThatWasStarted = 0;
+var isRFIDJugDetected = 0;
+var GRINDER = 0;
+var CUP_SIZE = 0;
+var SHOT_TYPE = 0;
+var qrcode = null;
+var timerGotoMainMenu = null;
+var timer = 15000;
+var bIconSelectionInfoIsVisible = 0;
+var JUG_STATUS = {
+	ALWAYS_VISIBLE: 1,
+	NEVER_VISIBLE: 2,
+	ON_RFID_STATUS: 3
+};
+
+var confirmFlag = false;
+var isBooking = false;
+var glob_cpuStatusID = 0;
+
+function isJUG()					{ if (iconDisplayName=="JUG") return true; return false;}
+function onRheaBootstrapFinished() 	{ lang_loadLang(lang_getCurLangISOCode()).then (onAfterLangLoaded); }
+function onAfterLangLoaded()
+{
+	lang_loadJS ("cupAppearance")
+		.then ( function()	
+		{
+			onAfterLangLoaded2();
+		});
+}
+
+function onAfterLangLoaded2()
+{
+	if( typeof beverageBookingLabel !== 'undefined' ) {
+		rheaSetElemHTML(rheaGetElemByID('currentDrink'), beverageBookingLabel);
+	}
+
+	//in get ci deve essere il parametro che indica quale iconMenu è stata selezionata
+	iconNum = parseInt(rheaGetURLParamOrDefault("iconMenu", 0));
+
+	isBooking = Rhea_session_getOrDefault('beverageBooking', false) && !parseInt(rheaGetURLParamOrDefault("autoStart", 0));
+
+	if(typeof gotoPageMainMenuAfterMSec !== 'undefined' && gotoPageMainMenuAfterMSec ) 
+	{
+		timer = gotoPageMainMenuAfterMSec
+	}
+
+	if(isBooking) 
+	{
+		rheaShowElem(rheaGetElemByID("bookingFooter"));
+	}
+
+	//carica le nutritional info
+	lang_loadJS ("nutriInfo").then ( function()
+	{
+		if (rheaLang_nutriInfo[iconNum] != "")
+		{
+			bIconSelectionInfoIsVisible = 1;
+			rheaShowElem(rheaGetElemByID("divBtnSelectionInfo"));
+		}
+	});
+		
+		
+	rhea.onEvent_creditUpdated = function ()
+	{
+		doUpdateCredit();
+	}
+	
+	rhea.onEvent_cpuMessage = function(msg, importanceLevel)
+	{
+		var dCPU = rheaGetElemByID ("divCPUMessage");
+		if (importanceLevel == 0)
+			rheaHideElem(dCPU)
+		else
+		{				
+			rheaSetElemHTML(dCPU, msg);
+			rheaShowElem(dCPU);
+		}
+	}
+	
+	rhea.onEvent_selectionReqStatus = function (status)
+	{
+		Rhea_session_clearObject('beverageBooking');
+
+		switch (status)
+		{
+			case 1: // wait for credit
+				console.log ("sel waiting..");
+				break;
+				
+			case 2:// selection started
+				gotoPagePreparingSel(0);
+				break;
+				
+			case 5:// selection started, can use btnStop
+				gotoPagePreparingSel(1);
+				break;
+
+			case 30:	// finished_KO_needSmallCupDown
+				errorCupPopup_open('down');
+				onSelectionAborted();
+				break;
+
+			case 31:	// finished_KO_needSmallCupUp
+				errorCupPopup_open('up');
+				onSelectionAborted();
+				break;
+
+			case 32:	// finished_KO_needSmallCupUpOrDown
+				errorCupPopup_open('downup');
+				onSelectionAborted();
+				break;
+
+			case 33:	// finished_KO_needBigCup
+				errorCupPopup_open('big');
+				onSelectionAborted();
+				break;
+
+			case 34:	// finished_KO_needACup
+				errorCupPopup_open('any');
+				onSelectionAborted();
+				break;
+
+			default:				
+			case 3: // selection aborted
+			case 4:
+				if(isBooking) 
+				{
+					enableBookingButtonIfNeeded();
+				} 
+				else 
+				{
+					onSelectionAborted();
+				}
+
+				break;
+		}	
+	}
+		
+	rhea.onEvent_cpuStatus = function( statusID, statusStr, flag16 ) 
+	{
+		console.log ("onEvent_cpuStatus[" +statusID +"][" +statusStr +"][" +flag16 +"]");
+		glob_cpuStatusID = parseInt(statusID);
+		
+		if(isBooking) 
+			enableBookingButtonIfNeeded();
+		
+		if ( parseInt(statusID) === 8 ) {	// Start of washing process
+			if (typeof rinsingHidden === 'undefined' || !rinsingHidden)
+				gotoRinsingPage();
+		}
+
+		if (isRFIDJugDetected) {
+			if ((flag16 & 0x0040) == 0){
+				isRFIDJugDetected = 0;
+				toggleJugIcons( false );
+			}
+		} else {
+			if ((flag16 & 0x0040) != 0) {
+				isRFIDJugDetected = 1;
+				toggleJugIcons( true );
+			}
+		}
+	}
+	
+	rhea.onEvent_selectionAvailabilityUpdated = function () 
+	{
+		onSelectionChanged(detectCurrentSelection());
+	}
+
+	checkHeaderImage();
+
+	setupPageContent();
+
+	doUpdateCredit();
+	rhea.requestGPUEvent(RHEA_EVENT_CPU_STATUS);
+	rhea.requestGPUEvent(RHEA_EVENT_CPU_MESSAGE);
+	//invece che "onclick", trappo l'evento "mouse up" cheè più affidabile sul touchscreen
+	var d = rheaGetElemByID("divBtnHome");
+	d.addEventListener('mouseup', function (ev)
+	{
+		if(confirmFlag && Rhea_session_getOrDefault('beverageBooking', false)) {
+			rheaShowElem(rheaGetElemByID("btnStart"));
+			rheaHideElem(rheaGetElemByID("btnStartConfirm"));
+			rheaHideElem(rheaGetElemByID("lblStartConfirm"));
+		
+			rheaGetElemByID("cupCustomBox").style.visibility = 'visible';
+
+
+			timerGotoMainMenu = setInterval(gotoPageMainMenu, timer);
+			confirmFlag = false;
+		} else if(confirmFlag && !Rhea_session_getOrDefault('beverageBooking', false)) {
+			window.location = "pageConfirm.html?iconMenu=" + iconNum;
+		} else {
+			window.location = "pageMenu.html";
+		}
+	}, true);	
+	
+	resetTimerGotoPageMainMenu();
+	
+	beverageBookingAnimation();
+
+	if (parseInt(rheaGetURLParamOrDefault("autoStart", 0))) {
+		document.querySelector("#btnStart").click();
+	}
+}
+
+function onSelectionAborted()
+{
+	console.log ("sel aborted [" +status +"]");
+	var dContent = rheaGetElemByID("rightPane_content");
+	var dWait = rheaGetElemByID("rightPane_wait");
+	rheaHideElem(dWait);
+	rheaSetDisplayMode(dContent, "inline-block");
+	selThatWasStarted = 0;
+	rheaShowElem(rheaGetElemByID("divBtnHome")); //btn back
+	if (bIconSelectionInfoIsVisible)
+		rheaShowElem(rheaGetElemByID("divBtnSelectionInfo")); //btn selection info
+	resetTimerGotoPageMainMenu();
+	onSelectionChanged(detectCurrentSelection());
+}
+
+function checkHeaderImage()
+{
+	if (typeof headerImageImg !== "undefined" && headerImageImg)
+	{
+		var img = rheaGetElemByID("headerImage");
+		img.src = 'upload/' + headerImageImg;
+	}
+
+	if (typeof hideHeaderImage === "undefined" || !hideHeaderImage)
+	{
+		rheaShowElem(rheaGetElemByID("headerImage"));
+	}
+}
+
+function enableBookingButtonIfNeeded()
+{
+	if (glob_cpuStatusID != 2) //2 == CPU_READY
+		return;
+		
+	if (confirmFlag)  
+	{
+		timerGotoMainMenu = setInterval(gotoPageMainMenu, timer);
+		
+		rheaGetElemByID("btnStartConfirm").classList.remove('disabled');
+		
+		rheaHideElem(rheaGetElemByID("progress-bar-value"));
+		
+		var finishLabel = rheaGetElemByID("progress-finish");
+		rheaSetElemHTML(finishLabel, rheaLang.LAB_YOUR_DRINK_IS_READY || 'Your drink ie ready. Enjoy it!')
+		rheaShowElem(finishLabel);
+	} 
+	else 
+	{
+		Rhea_session_clearObject('beverageBooking');
+		window.location = "pageConfirm.html?iconMenu=" + iconNum;
+	}
+} 
+
+function updatePriceLabelForSelection (selNum)
+{
+	var elemPrice = rheaGetElemByID("divPrice");
+	if (rhea.isFreevend == 1)
+	{
+		rheaSetElemHTML(elemPrice, "FREEVEND");
+		rheaShowElem (elemPrice);
+	}
+	else if (rhea.isTestvend == 1)
+	{
+		rheaSetElemHTML(elemPrice, "TESTVEND");
+		rheaShowElem (elemPrice);
+	}
+	else if (isJUG())
+	{
+		rheaHideElem(elemPrice);
+	}
+	else
+	{
+		var selInfo = rhea.selection_getBySelNumber(selNum);
+		var selPrice =  selInfo.price;
+		var priceMul = calcPriceMultiplier(selNum);
+		if (priceMul > 1)
+		{
+			var posizioneSeparatoreDecimale = 0;
+			var priceInt = 0;
+			for (var i=0; i<selPrice.length; i++)
+			{
+				if (selPrice[i]>='0' && selPrice<='9')
+					priceInt += selPrice[i];
+				else if (selPrice[i]=='.')
+					posizioneSeparatoreDecimale = i;
+			}
+			
+			if (posizioneSeparatoreDecimale != 0)
+			{
+				var numCifreDecimali = selPrice.length - (posizioneSeparatoreDecimale + 1);
+				selPrice = priceInt * priceMul;
+				
+				selPrice = selPrice.toString();
+				while (selPrice.length < (numCifreDecimali+1))
+					selPrice = "0" + selPrice;
+
+				var len = selPrice.length;
+				selPrice = selPrice.substr(0, len - numCifreDecimali) +"." +selPrice.substr(len - numCifreDecimali);
+			}
+			else
+				selPrice = priceInt * priceMul;
+		}
+		
+		rheaSetElemHTML (elemPrice, selPrice +" " +rheaLang.LAB_CURRENCY_SIMBOL);
+		if (parseFloat(selPrice) <= 0)
+			rheaHideElem (elemPrice);
+		else
+			rheaShowElem (elemPrice);
+	}
+}
+
+function onSelectionChanged(selNum)
+{
+	resetTimerGotoPageMainMenu();
+	
+	updatePriceLabelForSelection (selNum);
+	
+	var selInfo = rhea.selection_getBySelNumber(selNum);
+	var btnStart = rheaGetElemByID("btnStart");
+	var btnConfirm = rheaGetElemByID("btnStartConfirm");
+	var lblConfirm = rheaGetElemByID("lblStartConfirm");
+	var btnStartNotAvail = rheaGetElemByID("btnStartNotAvail");
+	var btnMilkNotAvail = rheaGetElemByID("btnMilkNotAvail");
+	var showRefillMilk = typeof freshMilkHidden !== 'undefined' && !freshMilkHidden;
+
+
+	if (selInfo.enabled == "0" && !isBookingInProgress())
+	{
+		rheaHideElem(btnStart);
+		rheaHideElem(btnConfirm);
+		rheaHideElem(lblConfirm);
+		
+		rheaSetElemHTML(btnStartNotAvail, rheaLang.BTN_START_SELECTION_NOT_AVAIL);
+		
+  
+		if (rhea.isOutOfFreshMilk==1 && selInfo.withFreshMilk && showRefillMilk)
+		{
+			rheaHideElem(btnStart);
+			rheaHideElem(btnStartNotAvail);
+			rheaShowElem(btnMilkNotAvail);
+
+			if (typeof refillFreshMilkBtn != 'undefined' && refillFreshMilkBtn) {
+				var d = rheaGetElemByID("refillMilkLabel");
+				rheaSetElemHTML(d, refillFreshMilkBtn);
+			}
+		}
+		else
+		{
+			rheaShowElem(btnStartNotAvail);
+			
+			rhea.ajax("getSelStatus", {selnum: detectCurrentSelection()})
+				.then(function( result ) {
+					switch (parseInt(result)) {
+						case 30:	// finished_KO_needSmallCupDown
+							if (typeof needSmallCupDownMessage != 'undefined' && needSmallCupDownMessage) {
+								rheaSetElemHTML(btnStartNotAvail, needSmallCupDownMessage);
+							}
+
+							break;
+						
+						case 31:	// finished_KO_needSmallCupUp
+							if (typeof needSmallCupUpMessage != 'undefined' && needSmallCupUpMessage) {
+								rheaSetElemHTML(btnStartNotAvail, needSmallCupUpMessage);
+							}
+
+							break;
+
+						case 32:	// finished_KO_needSmallCupUpOrDown
+							if (typeof needSmallCupUpDownMessage != 'undefined' && needSmallCupUpDownMessage) {
+								rheaSetElemHTML(btnStartNotAvail, needSmallCupUpDownMessage);
+							}
+
+							break;
+							
+						case 33: 	// finished_KO_needBigCup
+							if (typeof needBigCupMessage != 'undefined' && needBigCupMessage) {
+								rheaSetElemHTML(btnStartNotAvail, needBigCupMessage);
+							}
+
+							break;
+														
+						case 34: 	// finished_KO_needACup
+							if (typeof needGenericCupMessage != 'undefined' && needGenericCupMessage) {
+								rheaSetElemHTML(btnStartNotAvail, needGenericCupMessage);
+							}
+
+							break;
+							
+						default:
+							break;
+					}
+				})
+				.catch(function() {
+
+				});
+
+			rheaHideElem(btnMilkNotAvail);
+		}
+	}
+	else
+	{
+		rheaHideElem(btnStartNotAvail);
+		rheaHideElem(btnMilkNotAvail);
+		
+		if (isJUG())
+		{
+			rheaRemoveClassToElem (btnStart, "pageConfirm_bigFont");
+			rheaSetElemHTML (btnStart, "CHOOSE A BEVERAGE");
+		}
+		else
+		{
+			rheaSetElemHTML(btnStart, rheaLang.BTN_START_SELECTION);
+		}
+
+		if(isBooking)
+		{
+			rheaGetElemByID('divCPUMessage').classList.add('booking');
+			
+
+			if (typeof beverageBookingBtnStart !== 'undefined' && beverageBookingBtnStart && beverageBookingBtnStart !== 'NULL') {
+				rheaSetElemHTML(btnStart, beverageBookingBtnStart);
+			} else {
+				rheaSetElemHTML(btnStart, 'BOOK');
+			}
+
+			if (typeof beverageBookingBtnConfirm !== 'undefined' && beverageBookingBtnConfirm && beverageBookingBtnConfirm !== 'NULL') {
+				rheaSetElemHTML(btnConfirm, beverageBookingBtnConfirm);
+			} else {
+				rheaSetElemHTML(btnConfirm, 'Confirm booked beverage');
+			}	
+						
+			if (typeof beverageBookingLblConfirm !== 'undefined' && beverageBookingLblConfirm && beverageBookingLblConfirm !== 'NULL') {
+				rheaSetElemHTML(lblConfirm, beverageBookingLblConfirm);
+			} else {
+				rheaSetElemHTML(btnConfirm, 'Before confirming place a new cup');
+			}
+		}
+		
+		if (!confirmFlag) {
+			rheaHideElem(btnConfirm);
+			rheaShowElem(btnStart);
+		}
+	}
+	
+	//jug btn
+	if (selInfo.jug > 1) {
+		if( 
+			( jugConfiguration === JUG_STATUS.ALWAYS_VISIBLE ) || 
+			( jugConfiguration === JUG_STATUS.ON_RFID_STATUS && isRFIDJugDetected )
+		) {
+			btnJUG_setON();
+			btnJUG_setText (selInfo.jug);
+			btnJUG_show();
+		} else if ( jugConfiguration === JUG_STATUS.ON_RFID_STATUS && !isRFIDJugDetected ) {
+			btnJUG_setOFF();
+			btnJUG_hide();
+		}
+	} else {
+		btnJUG_setOFF();
+		btnJUG_hide();
+	}
+
+	if (rheaDebug_isEnabled())
+		rheaDebug_addText ("selection:" +selNum);
+}
+
+function toggleJugIcons( show ) 
+{
+	if (jugConfiguration === JUG_STATUS.ON_RFID_STATUS) {
+		if( show ) {
+			var selNum = detectCurrentSelection();
+			var selInfo = rhea.selection_getBySelNumber(selNum);
+
+			if( selInfo.jug ) {
+				btnJUG_setON();
+				btnJUG_setText (selInfo.jug);
+				btnJUG_show();
+			}
+		} else {
+			btnJUG_setOFF();
+			btnJUG_hide();
+		}
+
+		updatePriceLabelForSelection (detectCurrentSelection());
+	}
+}
+
+function doUpdateCredit()
+{
+	//rheaSetDivHTMLByName("divCredit", rhea.credit);	
+}
+
+var iconDisplayName="";
+function setupPageContent()
+{
+	var iconDisplayName = MMI_getDisplayName(iconNum);
+	var image = "<img draggable='false' src='" +MMI_getImgForPageConfirm(iconNum) +"'>";
+	var selNum = MMI_getLinkedSelectionNumber(iconNum);
+	
+	
+	//colonna sinistra, foto bevanda
+	var d = rheaGetElemByID("divSelectionImage");
+	rheaSetElemHTML(d, image);
+	
+	//nome bevanda
+	rheaSetDivHTMLByName("divSelectionName", iconDisplayName);
+	//secondo nome bevanda
+	if (typeof rhea_mainMenuIconSecondName !== 'undefined' && 
+		rhea_mainMenuIconSecondName[iconNum] && 
+		rhea_mainMenuIconSecondName[iconNum] !== 'NULL') {
+
+		var elSecondName = rheaGetElemByID("divSelectionNdName");
+		rheaSetElemHTML( elSecondName, rhea_mainMenuIconSecondName[iconNum] );
+		rheaShowElem( elSecondName );
+	}
+	
+	//colonna destra
+	var bShowOption1 = 0;
+	var bShowOption2 = 0;
+	var bShowCupDiv = 0;
+	
+	//carica la descrizione della bevanda
+	lang_loadJS ("mainMenuIconsInfo").then ( function()
+	{
+		var e = document.getElementById("selDescription");
+		e.innerHTML = rheaMainMenuIconsInfo[iconNum];
+		rheaShowElem(e);
+	});	
+	
+	onSelectionChanged(selNum);
+}
+
+function detectCurrentSelection()
+{
+	var selNum = MMI_getLinkedSelectionNumber(iconNum);
+	if (selNum == 0)
+		selNum = MMI_getLinkedSelection (iconNum, GRINDER, CUP_SIZE, SHOT_TYPE);
+	return selNum;
+}
+
+
+function onBtnStartSelection(buttonId)
+{
+	if(buttonId == 'btnStart' && isBooking) {
+		rheaHideElem(rheaGetElemByID("btnStart"));
+
+		rheaShowElem(rheaGetElemByID("btnStartConfirm"));
+		rheaShowElem(rheaGetElemByID("lblStartConfirm"));
+	
+		clearInterval(timerGotoMainMenu);
+		confirmFlag = true;
+
+		rheaGetElemByID("cupCustomBox").style.visibility = 'hidden';
+
+		return;
+	}
+	
+	if(buttonId == 'btnConfirmBooking' && rheaGetElemByID("btnStartConfirm").classList.contains('disabled')) {
+		return;
+	}
+	
+	clearInterval(timerGotoMainMenu);
+
+	var dContent = rheaGetElemByID("rightPane_content");
+	rheaHideElem(dContent);
+	
+	var dWait = rheaGetElemByID("rightPane_wait");
+	rheaShowElem(dWait);
+	
+	rheaHideElem(rheaGetElemByID("divBtnHome")); //btn back
+	rheaHideElem(rheaGetElemByID("divBtnSelectionInfo")); //btn selection info
+	
+	selThatWasStarted = detectCurrentSelection();
+
+	//se sono la preselezione JUG, alla pressione di start, memorizzo in session il fatto che JUG è attiva e torno al menu
+	if (isJUG())
+	{
+		Rhea_session_setValue ("jug", selThatWasStarted);
+		window.location = "pageMenu.html";
+		return;
+	}
+
+	console.log ("Starting sel num:" +selThatWasStarted);
+
+	//se JUG è attiva, prima mando il "btn" corrispondente al JUG e poi mando la selezione come al solito
+	var hoJugInCanna = Rhea_session_getOrDefault ("jug", "0");
+	if (hoJugInCanna=="") hoJugInCanna="0";
+	hoJugInCanna = parseInt(hoJugInCanna);
+	if (hoJugInCanna > 0)
+	{
+		Rhea_session_setValue ("jug", "0");
+		var buffer = new Uint8Array(2);
+		buffer[0] = 115;
+		buffer[1] = hoJugInCanna;
+		rhea.sendGPUCommand ("E", buffer, 0, 0);
+		console.log ("JUG on sel [" +hoJugInCanna +"]");
+		setTimeout (function() { doStartSelection(); }, 500);
+	}
+	else
+		doStartSelection(buttonId);
+}
+
+function calcPriceMultiplier(selNum)
+{
+	var priceMultiplier = 0;
+
+	if (isRFIDJugDetected)
+		priceMultiplier = parseInt( rhea.selection_getBySelNumber(selNum).jug );
+
+	if (jugConfiguration === JUG_STATUS.ALWAYS_VISIBLE && btnJUG_isON())
+		priceMultiplier = parseInt( rhea.selection_getBySelNumber(selNum).jug );
+		
+	if (priceMultiplier < 1)
+		priceMultiplier = 1;
+	
+	return priceMultiplier;
+}
+
+function doStartSelection(buttonId)
+{	
+	clearInterval(timerGotoMainMenu);
+	
+	console.log ("doStartSelection()");
+	var dContent = rheaGetElemByID("rightPane_content");
+	rheaHideElem(dContent);
+	
+	var dWait = rheaGetElemByID("rightPane_wait");
+	rheaShowElem(dWait);
+
+	rheaHideElem(rheaGetElemByID("divBtnHome")); //btn back
+	rheaHideElem(rheaGetElemByID("divBtnSelectionInfo")); //btn selection info
+	btnJUG_hide();
+
+	// resetTimerGotoPageMainMenu();
+	
+	if(parseInt(rheaGetURLParamOrDefault("autoStart", 0))) {
+		selThatWasStarted = parseInt(rheaGetURLParamOrDefault("selNum", 0));
+	}
+
+	console.log ("Starting sel num:" +selThatWasStarted);
+
+
+	if (jugConfiguration === JUG_STATUS.NEVER_VISIBLE)
+		rhea.selection_start(selThatWasStarted);
+	else {
+		if( isRFIDJugDetected )
+			rhea.selection_start(selThatWasStarted);
+		else {
+			if (btnJUG_isON() )
+				rhea.selection_startForceJug(selThatWasStarted);
+				else
+			{
+				if(buttonId == 'btnConfirmBooking') {
+					var counter = 0;
+					var intervalId = setInterval(function(){
+						counter++;
+
+						if (rhea.selection_getBySelNumber(selThatWasStarted).enabled) {
+							clearInterval(intervalId);
+							intervalId = null;
+
+							rhea.selection_start(selThatWasStarted);
+						}
+
+						// 10 secs
+						if(counter == 20) {
+							clearInterval(intervalId);
+							intervalId = null;
+
+							gotoPageMainMenu();
+						}
+					}, 500);
+				}
+				else
+				{
+					rhea.selection_start(selThatWasStarted);
+				}
+			}
+		}
+	}
+}
+		
+
+function gotoPagePreparingSel(bCanUseBtnStop)
+{
+	clearInterval(timerGotoMainMenu);
+	
+	var url = "pageSelInProgress.html";
+	url += "?iconMenu=" +iconNum +"&selNum=" +selThatWasStarted +"&btnStop=" +bCanUseBtnStop;
+
+	if(isBooking || parseInt(rheaGetURLParamOrDefault("autoStart", 0))) {
+		// url += "&stopBooking=1"
+	}
+
+	window.location = url;
+}
+
+function gotoSelectionInfo()	{ window.location = "pageSelectionInfo.html?iconMenu=" +iconNum; }
+
+function resetTimerGotoPageMainMenu() 
+{
+	if (null != timerGotoMainMenu)
+		clearInterval(timerGotoMainMenu);
+	timerGotoMainMenu = setInterval(gotoPageMainMenu, timer);
+}
+
+function gotoPageMainMenu()  	{ window.location = "pageMenu.html";  }
+function gotoRinsingPage() 		{ window.location = "pageRinsing.html";  }
+
+
+//******************** btn jug
+function classListContains (elem, what)
+{
+	for (var i=0; i<elem.classList.length; i++)
+	{
+		if (elem.classList[i] == what)
+			return 1;
+	}
+	return 0;
+}
+
+function btnJUG_show()				{ rheaShowElem (rheaGetElemByID("btnJUG")); }
+function btnJUG_hide()				{ rheaHideElem (rheaGetElemByID("btnJUG")); }
+function btnJUG_setText(txt)		{ rheaSetElemHTML (rheaGetElemByID("btnJUG_text"), "JUG x " +txt); }
+function btnJUG_isON()				{ var d = rheaGetElemByID("btnJUG"); return classListContains (d, "selected"); }
+
+function btnJUG_setON()
+{
+	var d = rheaGetElemByID("btnJUG");
+	if (classListContains (d, "selected"))
+		return;
+	rheaAddClassToElem(d,"selected");
+}
+
+function btnJUG_setOFF()
+{
+	var d = rheaGetElemByID("btnJUG");
+	if (classListContains (d, "selected"))
+	if ( !isRFIDJugDetected ) rheaRemoveClassToElem(d,"selected");
+}
+
+function onBtnJUGClicked ()
+{
+	if (btnJUG_isON())
+		btnJUG_setOFF();
+	else
+		btnJUG_setON();
+	
+	updatePriceLabelForSelection (detectCurrentSelection());
+}
+
+function beverageBookingAnimation() {
+	var loader = document.querySelector("#progress-cursor");
+	var intervalID = setInterval(function () {
+		var left = loader.offsetLeft;
+		var width = loader.offsetWidth;
+
+		if (left !== 190 && width === 100) {
+			loader.style.left = (left + 1) + 'px'
+		} else {
+			if (width > 1 && left !== 0) {
+				loader.style.width = (width - 1) + 'px'
+				loader.style.left = (left + 1) + 'px'
+			} else {
+				loader.style.left = "0px";
+				loader.style.width = (width + 1) + 'px'
+			}
+		}
+	}, 5);
+}
+
+function isBookingInProgress()
+{
+	return rheaGetElemByID("bookingFooter").style.display === 'block';
+}
+
+function milkPopup_open() {
+	var modalContent = rheaGetElemByID("rheaModalContent");
+	rheaSetElemHTML(modalContent, getPopup(POPUP.MILK));
+	
+	// POP-UP TITLE
+	if (typeof refillFreshMilkPopupTitle != 'undefined' && refillFreshMilkPopupTitle) {
+		var d = rheaGetElemByID("modalTitle");
+		rheaSetElemHTML(d, refillFreshMilkPopupTitle);
+	}
+
+	// POP-UP DESCRIPTION
+	if (typeof refillFreshMilkPopupDesc != 'undefined' && refillFreshMilkPopupDesc) {
+		var d = rheaGetElemByID("modalDescription");
+		rheaSetElemHTML(d, refillFreshMilkPopupDesc);
+	}
+
+	// POP-UP CONFIRM
+	if (typeof refillFreshMilkPopupConfirm != 'undefined' && refillFreshMilkPopupConfirm) {
+		var d = rheaGetElemByID("btnMilkConfirmLabel");
+		rheaSetElemHTML(d, refillFreshMilkPopupConfirm);
+	}
+
+	// POP-UP CANCEL
+	if (typeof refillFreshMilkPopupCancel != 'undefined' && refillFreshMilkPopupCancel) {
+		var d = rheaGetElemByID("btnMilkCancelLabel");
+		rheaSetElemHTML(d, refillFreshMilkPopupCancel);
+	}
+
+	rheaShowElem(rheaGetElemByID("rheaModal"));
+}
+
+function errorCupPopup_open(type) {
+	var modalContent = rheaGetElemByID("rheaModalContent");
+	rheaSetElemHTML(modalContent, getPopup(POPUP.WENGLOR));
+	
+	if (type === 'down' && typeof needSmallCupDownMessage != 'undefined' && needSmallCupDownMessage) {
+		var d = rheaGetElemByID("modalCupTitle");
+		rheaSetElemHTML(d, needSmallCupDownMessage);
+	}
+
+	if (type === 'up' && typeof needSmallCupUpMessage != 'undefined' && needSmallCupUpMessage) {
+		var d = rheaGetElemByID("modalCupTitle");
+		rheaSetElemHTML(d, needSmallCupUpMessage);
+	}
+
+	if (type === 'downup' && typeof needSmallCupUpDownMessage != 'undefined' && needSmallCupUpDownMessage) {
+		var d = rheaGetElemByID("modalCupTitle");
+		rheaSetElemHTML(d, needSmallCupUpDownMessage);
+	}
+
+	if (type === 'big' && typeof needBigCupMessage != 'undefined' && needBigCupMessage) {
+		var d = rheaGetElemByID("modalCupTitle");
+		rheaSetElemHTML(d, needBigCupMessage);
+	}
+
+	if (type === 'any' && typeof needGenericCupMessage != 'undefined' && needGenericCupMessage) {
+		var d = rheaGetElemByID("modalCupTitle");
+		rheaSetElemHTML(d, needGenericCupMessage);
+	}
+
+	rheaShowElem(rheaGetElemByID("rheaModal"));
+}
+
+function milkPopup_confirm() {
+	rhea.ajax("freshMilkRefilled", "")
+		.then(function() {
+
+		})
+		.catch(function() {
+
+		});
+
+	milkPopup_cancel();
+}
+
+function milkPopup_cancel() {
+	rheaHideElem(rheaGetElemByID("rheaModal"));
+}
+
+function cupConfirmPopup_cancel() {
+	rheaHideElem(rheaGetElemByID("rheaModal"));
+}
+
+
+</script>
+</html>

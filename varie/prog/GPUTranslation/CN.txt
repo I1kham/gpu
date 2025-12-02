@@ -1,0 +1,11 @@
+formPreGui
+{
+	RESET_GROUND_COUNTER: "重置
+咖啡渣计数器"
+	START_CLEANING_MILK_MODULE: "开始冲洗
+鲜奶套件"
+	CLOSE: "关闭"
+}
+
+
+

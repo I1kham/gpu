@@ -1,0 +1,48 @@
+* {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -o-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+@font-face { font-family: "MyFont"; src: url(./fonts/Roboto-Regular.ttf) format("truetype"); font-weight: normal;}
+@font-face { font-family: "MyFont"; src: url(./fonts/Roboto-Bold.ttf) format("truetype"); font-weight: bold;}
+@font-face { font-family: "MyFont"; src: url(./fonts/Roboto-Italic.ttf) format("truetype"); font-weight: normal; font-style: italic;}
+@font-face { font-family: "MyFont"; src: url(./fonts/Roboto-BoldItalic.ttf) format("truetype"); font-weight: bold; font-style: italic;}
+    
+
+
+*		{ font-family: "MyFont", "Roboto-Light", "Noto Sans CJK SC", "DejaVu Sans"; }
+html	{ background-color:#bbb; }
+body 	{ font-size:15px; background-color:#bbb; color:#fff; margin:0; padding:0;}
+html, body { overscroll-behavior-x: none; }
+form, div, input, h1, h2, h3, h4, h5	{ margin:0; padding:0; }
+table 	{ font-size:1.0em; }
+h1		{ font-size:1.3em; }
+h2		{ font-size:1.2em; margin-bottom:10px;}
+h3		{ font-size:1.1em; }
+input 	{ font-size:14px;}
+a		{ color: #fff; text-decoration:none; outline: 0;}
+a:hover	{ text-decoration:none; outline: 0; }
+
+.clear 	{ float:none; clear:both; }
+
+.wrapper1024x600 	{ font-size:20px; background-color:#000; color:#fff; width:1024px; height:600px; margin:0 auto; overflow:hidden; position:relative; }
+.bgAccent { padding: 4px; background-color:#cc5f29; color:#fff; }
+.colAccent { color:#cc5f29; }
+
+.mainbox 			{ margin:0 auto; padding:10px; margin:10px 0 0 10px; width:984px; height:560px; border:solid 1px #cc5f29; position:relative; }
+.separator  		{ margin:10px 0 10px 0; padding:0; width:100%; height:1px; border-top:solid 1px #cc5f29; }
+#div_description	{ overflow:auto; height:400px; }
+#div_bottomBar		{ width:994px; padding:2px 5px 0 5px; height:70px; position:absolute; left:0; top:510px; overflow:hide; border-top:solid 1px #cc5f29; }
+
+.UIButton 			{ cursor:pointer; display:table; overflow:hidden; background-color:#656565; color:#000; margin:0; padding:0; text-align:center;
+					  padding:0; margin:3px 0 3px 0; border-radius:5px;  font-size:1.0em; line-height:auto; }
+.UIButton p 		{ display: table-cell; vertical-align:middle; margin:0; padding:3px 10px 3px 10px; line-height:50px; }
+
+#divMenuLang { display:none; position:absolute; top:0; left:0; background-color:rgba(0,0,0,0.8); width:1024px; height:600px; z-index:999; color:#fff; font-size:1.0em; }
+#divMenuLang ul { list-style-type:none; margin:0; padding:0;}
+#divMenuLang ul li { margin:0; padding:10px 0 10px 0; font-size:1.5em; border-bottom: solid 1px #656565; cursor:pointer; }

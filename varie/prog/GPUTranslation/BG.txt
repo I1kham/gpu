@@ -1,0 +1,10 @@
+formPreGui
+{
+	RESET_GROUND_COUNTER: "НУЛИРАНЕ
+ОБРАТЕН БРОЯЧ ОТПАДЪЧНО КАФЕ"
+	START_CLEANING_MILK_MODULE: "СТАРТ ПОЧИСТВАНЕ МОДУЛ МЛЯКО"
+	CLOSE: "ЗАТВОРИ"
+}
+
+
+

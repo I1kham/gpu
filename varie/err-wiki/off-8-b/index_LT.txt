@@ -1,0 +1,112 @@
+<html>
+<head>
+	<title>ERROR WIKI</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="../common/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body onLoad="rheaBootstrapWithPathPrefix('../common/')">
+<div class="wrapper1024x600">
+
+	<div id="divMenuLang"></div>
+
+	
+	<div class="mainbox">
+		<h1><span class="bgAccent">ERROR CODE:</span> 8b</h1>
+		<div class="separator"></div>
+		<h2><span class="bgAccent">DESCRIPTION</span></h2>
+		
+		<div id="div_description">
+			Place Brewer in right position
+		</div>
+		
+		<div id="div_bottomBar">
+			<div style="float:left; margin-top:10px">
+				<div id="divCurLang" onclick="menuLang_show(1)"><img src="../../prog/img/flags/LT.png"></div>
+			</div>
+			
+			<div style="float:right">
+				<div id="btnClose" class="UIButton" onclick="onBtnClose()"><p id="btnCloseText">CLOSE</p></div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		
+	</div>
+</div>
+
+
+
+<script src="../common/js/rheaBootstrap.js"></script>
+<script src="../common/js/availLang.js"></script>
+<script src="../common/js/lang.js"></script>
+<script language="javascript">
+var OFF_isBlocking = "N";
+
+function onRheaBootstrapFinished()
+{
+	notifyGPUThatImHere();
+	menuLang_setup (lang_listOfAvailLang);
+
+	if (OFF_isBlocking == "Y")
+	{
+		rheaHideElem (rheaGetElemByID("btnClose"));
+		rhea.onEvent_cpuStatus = function (statusID, statusStr, flag16)
+		{
+			if (statusID == 5) //CPU e' andata in "ini-check, probabilmente si e' autoresettata
+				onBtnClose();	
+		}
+	}
+	else
+	{
+		autoclose_on_timer(60);
+	}
+}
+
+function notifyGPUThatImHere()
+{
+	//notifico GPU che sono entrato in questa pagina
+	rhea.ajax ("GUINotify", {"p0":1002}).then( function(result)
+	{
+	})
+	.catch( function(result)
+	{
+		setTimeout ( function() { notifyGPUThatImHere(); }, 1000);
+	});
+}
+
+var already_closing = 0;
+function autoclose_on_timer (timeLeft_sec)
+{
+	if (already_closing)
+		return;
+	if (timeLeft_sec <= 0)
+		onBtnClose();
+	else
+	{
+		rheaSetElemHTML(rheaGetElemByID("btnCloseText"), "CLOSE (" +timeLeft_sec +")");
+		setTimeout ( function() { autoclose_on_timer(timeLeft_sec-1); }, 1000);
+	}
+}
+
+function onBtnClose()
+{
+	already_closing = 1;
+	rheaHideElem (rheaGetElemByID("btnClose"));
+	
+	//notifico GPU che l'utente vuole chiudere la pagina
+	rhea.ajax ("GUINotify", {"p0":1001}).then( function(result)
+	{
+	})
+	.catch( function(result)
+	{
+		setTimeout ( function() { onBtnClose(); }, 1000);
+	});
+}
+
+
+</script>
+</body>
+</html>
+

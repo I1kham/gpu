@@ -1,0 +1,1 @@
+function isTEMPESTIVECLOUD () { return 0; }

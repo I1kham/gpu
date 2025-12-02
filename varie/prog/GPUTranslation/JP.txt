@@ -1,0 +1,10 @@
+formPreGui
+{
+	RESET_GROUND_COUNTER: "リセット
+グラインダー カウンター"
+	START_CLEANING_MILK_MODULE: "ミルクモジュールのクリーニングを開始"
+	CLOSE: "クローズ"
+}
+
+
+

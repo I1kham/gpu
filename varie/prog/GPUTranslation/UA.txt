@@ -1,0 +1,10 @@
+formPreGui
+{
+	RESET_GROUND_COUNTER: "СКИДАННЯ
+ЗВОРОТІЙЛІЧИЛЬНИК КАВОВОЇ ГУЩИ"
+	START_CLEANING_MILK_MODULE: "ПОЧАТИ ОЧИЩЕННЯ МОЛОЧНОГО МОДУЛЯ"
+	CLOSE: "ЗАКРИТО"
+}
+
+
+

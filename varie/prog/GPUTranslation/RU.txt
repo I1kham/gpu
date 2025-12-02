@@ -1,0 +1,10 @@
+formPreGui
+{
+	RESET_GROUND_COUNTER: "СБРОС
+ОБРАТНЫЙ СЧЕТЧИК КОФЕЙНЫХ ОТХОДОВ"
+	START_CLEANING_MILK_MODULE: "НАЧАТЬ ОЧИСТКУ КАПУЧИНАТОРА"
+	CLOSE: "ЗАКРЫТО"
+}
+
+
+

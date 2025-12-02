@@ -1,0 +1,170 @@
+<html>
+	<head>
+		<title>GUI</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link href="style.css" rel="stylesheet" type="text/css">
+	</head>
+
+	<body onLoad="rheaBootstrap()">
+		<div id="mainWrapper" class="wrapper1024x600">
+			<div class="header">
+				<center><img id="headerImage" src="img/logo_rhea.jpg" style="width: 126px; height: 40px; display: none"></center> 	
+			</div>
+
+			<div class="page" style="position:relative; text-align:center;">
+				<div id="divImage" class="pageSelInProg_image"></div>
+				<div id="divTitle" class="pageSelInProg_title"></div>
+			</div>
+
+			<div id="divTextAtBottom" style="position:absolute; bottom:40px; width:100%; height:40px; overflow:hidden; font-style:italic; font-size:1.0em; text-align:center"></div>
+			<div id="divCPUMessage" style="position:absolute; bottom:5px; left:0; padding:5px 0 3px 0;width:100%; text-align:center; display:none; background-color:rgba(0,0,0,0.8); color:#fff"></div>
+			<div id="repeatDrinkButton" style="display: none; position: absolute; bottom: 35px; right: 40px;" onclick="repeatSelection()">
+				<div id="lblStartConfirm" style="font-size: 15px;position: absolute;top: -40px;right: -30px;margin: 0px auto;display: block;width: 260px;"></div>
+				<div style="display: table; border: 1px solid white; border-radius: 4px; padding: 9px; background-color: #242424;">
+					<img src="img/beverage_booking.png" style="display: table-cell; vertical-align: middle;">
+					<div id="repeatDrinkButtonLabel" style="display: table-cell; vertical-align: middle; padding: 0 10px;"></div>
+				</div>
+			</div>
+			<div id="backButton" style="display: none; position: absolute; bottom: 35px; left: 40px;" onclick="gotoMenuPage()">
+				<div style="display: table; border: 1px solid white; border-radius: 4px; padding: 9px; background-color: #242424;">
+					<div id="backButtonLabel" style="display: table-cell; vertical-align: middle; padding: 0 10px;"></div>
+				</div>
+			</div>
+			<div id="loader" style="width: 100%; text-align: center; display: none; position: absolute; bottom: 15px;">
+				<img draggable="false" src="img/animationRound.gif">
+			</div>
+		</div>
+
+		<script src="config/lang.js"></script>
+		<script src="config/mainMenuIcons.js"></script>
+		<script src="config/MMI.js"></script>
+		<script src="config/pageSelFinished.js"></script>
+		<script src="js/rheaBootstrap.js"></script>
+
+		<script language="javascript">
+			var timerGotoMainMenu = null;
+
+			function onRheaBootstrapFinished() 
+			{
+				lang_loadLang(lang_getCurLangISOCode()).then(onAfterLangLoaded);
+			}
+
+			function onAfterLangLoaded()
+			{
+				/*rhea.onEvent_cpuMessage = function(msg, importanceLevel)
+				{
+					var dCPU = rheaGetElemByID ("divCPUMessage");
+					if (importanceLevel == 0)
+						rheaHideElem(dCPU);
+					else
+					{
+						rheaSetElemHTML(dCPU, msg);
+						rheaShowElem(dCPU);
+					}
+				}*/
+
+				if (typeof beverageRepeat !== 'undefined' && beverageRepeat && !parseInt(rheaGetURLParamOrDefault("stopRepeat", 0))) {
+					var btnRepeat = rheaGetElemByID("repeatDrinkButton");
+					var lblRepeat = rheaGetElemByID("lblStartConfirm");
+
+					rheaShowElem(btnRepeat);
+					rheaShowElem(lblRepeat);
+
+					if (typeof beverageRepeatBtn !== 'undefined' && beverageRepeatBtn && beverageRepeatBtn !== 'NULL') {
+						rheaSetElemHTML(rheaGetElemByID('repeatDrinkButtonLabel'), beverageRepeatBtn);
+					} else {
+						rheaSetElemHTML(rheaGetElemByID('repeatDrinkButtonLabel'), 'Repeat last drink');
+					}
+					
+					if (typeof beverageRepeatLbl !== 'undefined' && beverageRepeatLbl && beverageRepeatLbl !== 'NULL') {
+						rheaSetElemHTML(lblRepeat, beverageRepeatLbl);
+					} else {
+						rheaSetElemHTML(lblRepeat, 'Before confirming place a new cup');
+					}
+
+					lblRepeat.style.top = lblRepeat.offsetHeight > 20? '-40px' : '-20px';
+
+					var btnBack = rheaGetElemByID("backButton");
+					rheaShowElem(btnBack);
+
+					if (typeof backMainPageBtn !== 'undefined' && backMainPageBtn && backMainPageBtn !== 'NULL') {
+						rheaSetElemHTML(rheaGetElemByID('backButtonLabel'), backMainPageBtn);
+					} else {
+						rheaSetElemHTML(rheaGetElemByID('backButtonLabel'), 'Back to main page');
+					}
+				}
+
+				rhea.requestGPUEvent(RHEA_EVENT_CPU_MESSAGE);
+				
+				//in get ci deve essere il parametro che indica quale iconMenu è stata selezionata
+				var iconNum = parseInt(rheaGetURLParamOrDefault("iconMenu", 0));
+				var selNum = parseInt(rheaGetURLParamOrDefault("selNum", 0));
+				
+				var iconDisplayName = MMI_getDisplayName(iconNum);
+				var image = "<img draggable='false' src='" +MMI_getImgForPageConfirm(iconNum) +"'>";
+				
+				var d = rheaGetElemByID("divImage");
+				rheaSetElemHTML(d, image);
+				
+				d = rheaGetElemByID("divTitle");
+				rheaSetElemHTML(d, iconDisplayName);	
+					
+				//your drink is ready msg..
+				var d = rheaGetElemByID("divTextAtBottom");
+				rheaSetElemHTML (d, rheaLang["LAB_YOUR_DRINK_IS_READY"]);
+				rheaShowElem (d);	
+				
+				
+				timerGotoMainMenu = setTimeout(gotoMenuPage, selFinishedPageOptions.timeToGoBack);
+				
+				checkHeaderImage();
+			}
+
+			function checkHeaderImage()
+			{
+				if (typeof headerImageImg !== "undefined" && headerImageImg)
+				{
+					var img = rheaGetElemByID("headerImage");
+					img.src = 'upload/' + headerImageImg;
+				}
+
+				if (typeof hideHeaderImage === "undefined" || !hideHeaderImage)
+				{
+					rheaShowElem(rheaGetElemByID("headerImage"));
+				}
+			}
+
+			function repeatSelection() {
+				clearTimeout(timerGotoMainMenu);
+				
+				rheaHideElem(rheaGetElemByID("divTextAtBottom"));
+				rheaHideElem(rheaGetElemByID("repeatDrinkButton"));
+				rheaHideElem(rheaGetElemByID("backButton"));
+
+				rheaShowElem(rheaGetElemByID("loader"));
+
+				var selNum = parseInt(rheaGetURLParamOrDefault("selNum", 0));
+
+				setTimeout( function() {
+					gotoPagePreparingSel();
+				}, 1500);
+			}
+
+			function gotoPagePreparingSel() {
+				var iconNum = parseInt(rheaGetURLParamOrDefault("iconMenu", 0));
+				var selNum = parseInt(rheaGetURLParamOrDefault("selNum", 0));
+
+				var url = "pageConfirm.html";
+				url += "?iconMenu=" + iconNum + "&selNum=" + selNum + "&autoStart=" + 1;
+				window.location = url;
+			}
+
+			function gotoMenuPage()
+			{
+				window.location = "pageMenu.html";
+			}
+		</script>
+	</body>
+</html>

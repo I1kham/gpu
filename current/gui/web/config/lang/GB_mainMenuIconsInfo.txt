@@ -1,0 +1,1 @@
+var rheaMainMenuIconsInfo=["Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! ","Enjoy your drink! "];
